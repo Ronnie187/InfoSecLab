@@ -3,9 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CIPHER</title>
+    <title>Cipher Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        input, button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #59ec8a;
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <H1>TESTING CIPHER</H1>
+    <div class="container-wrapper">
+        <div class="container">
+            <h2>Caesar Cipher</h2>
+            <input type="text" id="caesarMessage" placeholder="Enter message">
+            <input type="number" id="caesarShift" placeholder="Enter shift">
+            <button onclick="encryptCaesar()">Encrypt</button>
+            <button onclick="decryptCaesar()">Decrypt</button>
+            <p>Output: <span id="caesarResult"></span></p>
+        </div>
+
+
+        <div class="container">
+            <h2>Monoalphabetic Cipher</h2>
+            <input type="text" id="monoMessage" placeholder="Enter message">
+            <button onclick="encryptMono()">Encrypt</button>
+            <button onclick="decryptMono()">Decrypt</button>
+            <p>Output: <span id="monoResult"></span></p>
+        </div>
+
+        <div class="container">
+            <h2>Playfair Cipher</h2>
+            <input type="text" id="playfairMessage" placeholder="Enter message">
+            <input type="text" id="playfairKey" placeholder="Enter key">
+            <button onclick="encryptPlayfair()">Encrypt</button>
+            <button onclick="decryptPlayfair()">Decrypt</button>
+            <p>Output: <span id="playfairResult"></span></p>
+        </div>
+    </div>
+
+    <script src="caesar.js"></script>
+    <script src="mono.js"></script>
+    <script src="playfair.js"></script>
 </body>
 </html>
