@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cipher Tool</title>
+    <title>Ciphers</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,24 +30,37 @@
             width: 90%;
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ccc;
+            border: 1px solid #000000;
             border-radius: 5px;
         }
         button {
-            background-color: #59ec8a;
-            color: rgb(0, 0, 0);
+            background-color: #000000;
+            color: rgb(255, 255, 255);
             cursor: pointer;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .button-group button {
+            flex: 1 1 calc(50% - 10px);
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
+    <h1>CLASSICAL CIPHERS</h1>
+
     <div class="container-wrapper">
         <div class="container">
             <h2>Caesar Cipher</h2>
             <input type="text" id="caesarMessage" placeholder="Enter message">
             <input type="number" id="caesarShift" placeholder="Enter shift">
+            <div class="button-group">
             <button onclick="encryptCaesar()">Encrypt</button>
             <button onclick="decryptCaesar()">Decrypt</button>
+            </div>
             <p>Output: <span id="caesarResult"></span></p>
         </div>
 
@@ -55,8 +68,10 @@
         <div class="container">
             <h2>Monoalphabetic Cipher</h2>
             <input type="text" id="monoMessage" placeholder="Enter message">
+            <div class="button-group">
             <button onclick="encryptMono()">Encrypt</button>
             <button onclick="decryptMono()">Decrypt</button>
+            </div>
             <p>Output: <span id="monoResult"></span></p>
         </div>
 
@@ -64,8 +79,10 @@
             <h2>Playfair Cipher</h2>
             <input type="text" id="playfairMessage" placeholder="Enter message">
             <input type="text" id="playfairKey" placeholder="Enter key">
+            <div class="button-group">
             <button onclick="encryptPlayfair()">Encrypt</button>
             <button onclick="decryptPlayfair()">Decrypt</button>
+            </div>
             <p>Output: <span id="playfairResult"></span></p>
         </div>
     </div>

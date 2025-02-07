@@ -1,14 +1,32 @@
-function caesarCipher(text, shift, decrypt = false) {
-    if (decrypt) shift = -shift;
+// Arrays for lowercase and uppercase letters
+const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+function caesarCipher(text, shift, decrypt = false) {
     return text.split('').map(char => {
-        if (char.match(/[a-z]/i)) {
-            const code = char.charCodeAt(0);
-            const shiftAmount = code >= 65 && code <= 90 ? 65 : 97;
-            return String.fromCharCode(((code - shiftAmount + shift) % 26 + 26) % 26 + shiftAmount);
+        if (lowercaseLetters.includes(char)) {
+            return shiftCharacter(char, shift, lowercaseLetters, decrypt);
+        } else if (uppercaseLetters.includes(char)) {
+            return shiftCharacter(char, shift, uppercaseLetters, decrypt);
+        } else {
+            return char; // Non-alphabetic characters remain unchanged
         }
-        return char;
     }).join('');
+}
+
+function shiftCharacter(char, shift, letters, decrypt) {
+    const index = letters.indexOf(char); // Find the index of the character in the array
+    let shiftedIndex;
+
+    if (decrypt) {
+        // Decrypt: Move left (subtract shift)
+        shiftedIndex = (index - shift + letters.length) % letters.length;
+    } else {
+        // Encrypt: Move right (add shift)
+        shiftedIndex = (index + shift) % letters.length;
+    }
+
+    return letters[shiftedIndex]; // Return the shifted character
 }
 
 function encryptCaesar() {
@@ -24,4 +42,3 @@ function decryptCaesar() {
     const result = caesarCipher(message, shift, true);
     document.getElementById('caesarResult').textContent = result;
 }
-
