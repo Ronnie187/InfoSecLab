@@ -3,7 +3,6 @@ function createPlayfairMatrix(key) {
     let matrix = [];
     let seen = new Set();
 
-
     // Convert key to uppercase, replace 'J' with 'I' and remove non-alphabet characters
     key = (key + alphabet).toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
     
