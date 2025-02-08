@@ -46,6 +46,7 @@ function monoalphabeticDecrypt(text) {
     }).join('');
 }
 
+document.getElementById('randomKey').textContent = uppercaseKey;
 
 function encryptMono() {
     const message = document.getElementById('monoMessage').value;
