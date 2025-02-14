@@ -29,70 +29,78 @@ function createPlayfairLookup(matrix) {
 }
 
 function prepareText(text) {
-    // Convert text to uppercase, replace 'J' with 'I' and remove non-alphabet characters
-    text = text.toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
-    let preparedText = '';
+    text = text.toUpperCase().replace(/J/g, 'I');
     
-    // Ensure pairs of letters, inserting 'X' if necessary
-    for (let i = 0; i < text.length; i += 2) {
-        preparedText += text[i];
-        if (i + 1 < text.length) {
-            if (text[i] === text[i + 1]) {
-                preparedText += 'X';
+    let processedText = '';
+    let spaceIndexes = [];
+    
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === ' ') {
+            spaceIndexes.push(processedText.length); // Store space position
+        } else if (text[i].match(/[A-Z]/)) {
+            processedText += text[i];
+            if (i + 1 < text.length && text[i] === text[i + 1]) {
+                processedText += 'X';
             }
-            preparedText += text[i + 1];
         }
     }
     
-    // If the length is odd, add an 'X' at the end
-    if (preparedText.length % 2 !== 0) {
-        preparedText += 'X';
+    if (processedText.length % 2 !== 0) {
+        processedText += 'X';
     }
-    
-    return preparedText;
+
+    return { text: processedText, spaceIndexes };
+}
+
+function restoreSpaces(text, spaceIndexes) {
+    let arr = text.split('');
+    spaceIndexes.forEach(index => arr.splice(index, 0, ' '));
+    return arr.join('');
 }
 
 function playfairEncrypt(plaintext, key) {
     const matrix = createPlayfairMatrix(key);
     const lookup = createPlayfairLookup(matrix);
-    plaintext = prepareText(plaintext);
+    let { text, spaceIndexes } = prepareText(plaintext);
     let ciphertext = '';
 
-    // Process each pair of letters
-    for (let i = 0; i < plaintext.length; i += 2) {
-        let { row: r1, col: c1 } = lookup[plaintext[i]];
-        let { row: r2, col: c2 } = lookup[plaintext[i + 1]];
+    for (let i = 0; i < text.length; i += 2) {
+        let { row: r1, col: c1 } = lookup[text[i]];
+        let { row: r2, col: c2 } = lookup[text[i + 1]];
 
-        if (r1 === r2) { // Same row -> shift right
+        if (r1 === r2) {
             ciphertext += matrix[r1][(c1 + 1) % 5] + matrix[r2][(c2 + 1) % 5];
-        } else if (c1 === c2) { // Same column ->shift down
+        } else if (c1 === c2) {
             ciphertext += matrix[(r1 + 1) % 5][c1] + matrix[(r2 + 1) % 5][c2];
-        } else { // Rectangle swap
+        } else {
             ciphertext += matrix[r1][c2] + matrix[r2][c1];
         }
     }
-    return ciphertext;
+
+    return restoreSpaces(ciphertext, spaceIndexes);
 }
 
 function playfairDecrypt(ciphertext, key) {
     const matrix = createPlayfairMatrix(key);
     const lookup = createPlayfairLookup(matrix);
+    let spaceIndexes = [];
+
     let plaintext = '';
 
-    // Process each pair of letters
     for (let i = 0; i < ciphertext.length; i += 2) {
         let { row: r1, col: c1 } = lookup[ciphertext[i]];
         let { row: r2, col: c2 } = lookup[ciphertext[i + 1]];
 
-        if (r1 === r2) { // Same row -> shift left
+        if (r1 === r2) {
             plaintext += matrix[r1][(c1 - 1 + 5) % 5] + matrix[r2][(c2 - 1 + 5) % 5];
-        } else if (c1 === c2) { // Same column -> shift up
+        } else if (c1 === c2) {
             plaintext += matrix[(r1 - 1 + 5) % 5][c1] + matrix[(r2 - 1 + 5) % 5][c2];
-        } else { // Rectangle swap
+        } else {
             plaintext += matrix[r1][c2] + matrix[r2][c1];
         }
     }
-    return plaintext;
+
+    return restoreSpaces(plaintext, spaceIndexes);
 }
 
 function encryptPlayfair() {

@@ -9,10 +9,11 @@ function caesarCipher(text, shift, decrypt = false) {
         } else if (uppercaseLetters.includes(char)) {
             return shiftCharacter(char, shift, uppercaseLetters, decrypt);
         } else {
-            return char; // Non-alphabetic characters remain unchanged
+            return char; // Keep spaces and special characters unchanged
         }
     }).join('');
 }
+
 
 function shiftCharacter(char, shift, letters, decrypt) {
     const index = letters.indexOf(char); // Find the index of the character in the array
