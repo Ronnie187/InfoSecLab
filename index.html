@@ -51,167 +51,93 @@
 </head>
 <body>
     <h1>CLASSICAL CIPHERS</h1>
-
-    <div class="container-wrapper">  <!---------------------------- CAESAR CIPHER ---------------------------->
+        <!---------------------------- CAESAR CIPHER ---------------------------->
+    <div class="container-wrapper">  
         <div class="container">
             <h2>Caesar Cipher</h2>
             <input type="text" id="caesarMessage" placeholder="Enter message">
             <input type="number" id="caesarShift" placeholder="Enter shift">
             <div class="button-group">
-            <button onclick="encryptCaesar()">Encrypt</button>
-            <button onclick="decryptCaesar()">Decrypt</button>
+                <button onclick="encryptCaesar()">Encrypt</button>
+                <button onclick="decryptCaesar()">Decrypt</button>
             </div>
             <p>Output: <span id="caesarResult"></span></p>
         </div>
+   
 
-        <script>
-            // Arrays for lowercase and uppercase letters
-            const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz'.split('');
-            const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    <script>
+        function caesarCipher(text, shift, decrypt = false) {
+            shift = decrypt ? -shift : shift;
+            return text.replace(/[a-zA-Z]/g, char => {
+                let base = char >= 'a' ? 97 : 65; // ASCII for 'a' or 'A'
+                return String.fromCharCode((char.charCodeAt(0) - base + shift + 26) % 26 + base);
+            });
+        }
 
-            function caesarCipher(text, shift, decrypt = false) {
-                return text.split('').map(char => {
-                    if (lowercaseLetters.includes(char)) {
-                        return shiftCharacter(char, shift, lowercaseLetters, decrypt);
-                    } else if (uppercaseLetters.includes(char)) {
-                        return shiftCharacter(char, shift, uppercaseLetters, decrypt);
-                    } else {
-                        return char; // Keep spaces and special characters unchanged
-                    }
-                }).join('');
-            }
+        function encryptCaesar() {
+            processCaesar(false);
+        }
 
+        function decryptCaesar() {
+            processCaesar(true);
+        }
 
-            function shiftCharacter(char, shift, letters, decrypt) {
-                const index = letters.indexOf(char); // Find the index of the character in the array
-                let shiftedIndex;
+        function processCaesar(decrypt = none) {
+            let text = document.getElementById('caesarMessage').value;
+            let shift = parseInt(document.getElementById('caesarShift').value) || 0;
+            document.getElementById('caesarResult').textContent = caesarCipher(text, shift, decrypt);
+        }
+    </script>
 
-                if (decrypt) {
-                    // Decrypt: Move left (subtract shift)
-                    shiftedIndex = (index - shift + letters.length) % letters.length;
-                } else {
-                    // Encrypt: Move right (add shift)
-                    shiftedIndex = (index + shift) % letters.length;
-                }
-
-                return letters[shiftedIndex]; // Return the shifted character
-            }
-
-            function encryptCaesar() {
-                const message = document.getElementById('caesarMessage').value;
-                const shift = parseInt(document.getElementById('caesarShift').value);
-                const result = caesarCipher(message, shift);
-                document.getElementById('caesarResult').textContent = result;
-            }
-
-            function decryptCaesar() {
-                const message = document.getElementById('caesarMessage').value;
-                const shift = parseInt(document.getElementById('caesarShift').value);
-                const result = caesarCipher(message, shift, true);
-                document.getElementById('caesarResult').textContent = result;
-            }
-
-        </script>
-
-
-
-        <div class="container">  <!---------------------------- MONOALPHABETIC CIPHER ----------------------------> 
-            <h2>Monoalphabetic Cipher</h2>
-            <h6>Random Key: <span id="randomKey"></span></h6>
-            <input type="text" id="monoMessage" placeholder="Enter message">
-            <div class="button-group">
+    <!---------------------------- MONOALPHABETIC CIPHER ----------------------------> 
+    <div class="container">  
+        <h2>Monoalphabetic Cipher</h2>
+        <h6>Random Key: <span id="randomKey"></span></h6>
+        <input type="text" id="monoMessage" placeholder="Enter message">
+        <div class="button-group">
             <button onclick="encryptMono()">Encrypt</button>
             <button onclick="decryptMono()">Decrypt</button>
-            </div>
-            <p>Output: <span id="monoResult"></span></p>
         </div>
+        <p>Output: <span id="monoResult"></span></p>
+    </div>
 
-        <script>
-            // Arrays for uppercase and lowercase alphabets
-            const uppercaseAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            const lowercaseAlphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    <script>
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let shuffled = alphabet.split('').sort(() => Math.random() - 0.5).join('');
+        
+        document.getElementById('randomKey').textContent = shuffled;
 
-            // Shuffle function to create a random substitution key
-            function shuffleArray(array) {
-                return array.slice().sort(() => Math.random() - 0.5);
-            }
+        function monoCipher(text, encrypt = true) {
+            return text.replace(/[a-zA-Z]/g, char => {
+                let isUpper = char === char.toUpperCase();
+                let source = isUpper ? alphabet : alphabet.toLowerCase();
+                let target = isUpper ? shuffled : shuffled.toLowerCase();
+                return encrypt ? target[source.indexOf(char)] : source[target.indexOf(char)];
+            });
+        }
 
-            let uppercaseKey = shuffleArray(uppercaseAlphabet);
-            let lowercaseKey = uppercaseKey.map(char => char.toLowerCase());
+        function encryptMono() {
+            processMono(true);
+        }
 
-            function monoalphabeticEncrypt(text) {
-                return text.split('').map(char => {
-                    if (uppercaseAlphabet.includes(char)) {
-                        return uppercaseKey[uppercaseAlphabet.indexOf(char)];
-                    } else if (lowercaseAlphabet.includes(char)) {
-                        return lowercaseKey[lowercaseAlphabet.indexOf(char)];
-                    } else {
-                        return char; // Keep spaces and special characters unchanged
-                    }
-                }).join('');
-            }
+        function decryptMono() {
+            processMono(false);
+        }
 
-            function monoalphabeticDecrypt(text) {
-                return text.split('').map(char => {
-                    if (uppercaseKey.includes(char)) {
-                        return uppercaseAlphabet[uppercaseKey.indexOf(char)];
-                    } else if (lowercaseKey.includes(char)) {
-                        return lowercaseAlphabet[lowercaseKey.indexOf(char)];
-                    } else {
-                        return char; // Keep spaces and special characters unchanged
-                    }
-                }).join('');
-            }
+        function processMono(encrypt = none) {
+            let text = document.getElementById('monoMessage').value;
+            document.getElementById('monoResult').textContent = monoCipher(text, encrypt);
+        }
 
-
-            console.log("Uppercase Key:", uppercaseKey.join(''));
-            console.log("Lowercase Key:", lowercaseKey.join(''));
-
-            // Encryption function
-            function monoalphabeticEncrypt(text) {
-                return text.split('').map(char => {
-                    if (uppercaseAlphabet.includes(char)) {
-                        return uppercaseKey[uppercaseAlphabet.indexOf(char)];
-                    } else if (lowercaseAlphabet.includes(char)) {
-                        return lowercaseKey[lowercaseAlphabet.indexOf(char)];
-                    } else {
-                        return char; // Keep spaces and special characters unchanged
-                    }
-                }).join('');
-            }
-
-            // Decryption function
-            function monoalphabeticDecrypt(text) {
-                return text.split('').map(char => {
-                    if (uppercaseKey.includes(char)) {
-                        return uppercaseAlphabet[uppercaseKey.indexOf(char)];
-                    } else if (lowercaseKey.includes(char)) {
-                        return lowercaseAlphabet[lowercaseKey.indexOf(char)];
-                    } else {
-                        return char; // Keep spaces and special characters unchanged
-                    }
-                }).join('');
-            }
-
-            document.getElementById('randomKey').textContent = uppercaseKey;
-
-            function encryptMono() {
-                const message = document.getElementById('monoMessage').value;
-                const result = monoalphabeticEncrypt(message);
-                document.getElementById('monoResult').textContent = result;
-            }
-
-            function decryptMono() {
-                const message = document.getElementById('monoMessage').value;
-                const result = monoalphabeticDecrypt(message);
-                document.getElementById('monoResult').textContent = result;
-            }
-        </script>
+        console.log("Uppercase Key:", shuffled);
+        console.log("Lowercase Key:", shuffled.toLowerCase());
+    </script>
 
 
 
 
-        <div class="container">  <!---------------------------- PLAYFAIR CIPHER ---------------------------->
+        <!---------------------------- PLAYFAIR CIPHER ---------------------------->
+        <div class="container">  
             <h2>Playfair Cipher</h2>
             <input type="text" id="playfairMessage" placeholder="Enter message">
             <input type="text" id="playfairKey" placeholder="Enter key">
@@ -224,127 +150,98 @@
 
         <script>
             function createPlayfairMatrix(key) {
-                const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'; // 'J' is removed from the alphabet
-                let matrix = [];
-                let seen = new Set();
-
-                // Convert key to uppercase, replace 'J' with 'I' and remove non-alphabet characters
-                key = (key + alphabet).toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+                const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ';
+                let seen = new Set(), matrix = [];
                 
-                // Build the Playfair matrix ensuring unique characters
-                for (let char of key) {
+                for (let char of (key + alphabet).toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '')) {
                     if (!seen.has(char)) {
                         seen.add(char);
                         matrix.push(char);
                     }
                 }
-
-                // Convert the linear array into a 5x5 matrix
                 return Array.from({ length: 5 }, (_, i) => matrix.slice(i * 5, i * 5 + 5));
             }
 
             function createPlayfairLookup(matrix) {
                 let lookup = {};
-                for (let row = 0; row < 5; row++) {
-                    for (let col = 0; col < 5; col++) {
-                        lookup[matrix[row][col]] = { row, col };
-                    }
-                }
+                matrix.flat().forEach((char, i) => lookup[char] = { row: Math.floor(i / 5), col: i % 5 });
                 return lookup;
             }
 
             function prepareText(text) {
-                text = text.toUpperCase().replace(/J/g, 'I');
-                
-                let processedText = '';
                 let spaceIndexes = [];
-                
-                for (let i = 0; i < text.length; i++) {
-                    if (text[i] === ' ') {
-                        spaceIndexes.push(processedText.length); // Store space position
-                    } else if (text[i].match(/[A-Z]/)) {
-                        processedText += text[i];
-                        if (i + 1 < text.length && text[i] === text[i + 1]) {
-                            processedText += 'X';
-                        }
-                    }
-                }
-                
-                if (processedText.length % 2 !== 0) {
-                    processedText += 'X';
-                }
+                text = text.toUpperCase().replace(/J/g, 'I');
 
-                return { text: processedText, spaceIndexes };
+                // Store space positions
+                text.split('').forEach((char, index) => {
+                    if (char === ' ') spaceIndexes.push(index);
+                });
+
+                text = text.replace(/[^A-Z]/g, ''); // Remove non-letters
+                let prepared = '';
+
+                for (let i = 0; i < text.length; i++) {
+                    prepared += text[i];
+                    if (text[i] === text[i + 1]) prepared += 'X';
+                }
+                if (prepared.length % 2) prepared += 'X';
+
+                return { prepared, spaceIndexes };
             }
 
             function restoreSpaces(text, spaceIndexes) {
                 let arr = text.split('');
-                spaceIndexes.forEach(index => arr.splice(index, 0, ' '));
+                spaceIndexes.forEach(index => {
+                    if (index < arr.length) arr.splice(index, 0, ' '); // Restore space if within range
+                });
                 return arr.join('');
             }
 
-            function playfairEncrypt(plaintext, key) {
+            function playfairCipher(text, key, encrypt = true) {
                 const matrix = createPlayfairMatrix(key);
                 const lookup = createPlayfairLookup(matrix);
-                let { text, spaceIndexes } = prepareText(plaintext);
-                let ciphertext = '';
+                
+                let { prepared, spaceIndexes } = prepareText(text);
+                let shift = encrypt ? 1 : -1;
+                let result = '';
 
-                for (let i = 0; i < text.length; i += 2) {
-                    let { row: r1, col: c1 } = lookup[text[i]];
-                    let { row: r2, col: c2 } = lookup[text[i + 1]];
-
+                for (let i = 0; i < prepared.length; i += 2) {
+                    let { row: r1, col: c1 } = lookup[prepared[i]];
+                    let { row: r2, col: c2 } = lookup[prepared[i + 1]];
+                    
                     if (r1 === r2) {
-                        ciphertext += matrix[r1][(c1 + 1) % 5] + matrix[r2][(c2 + 1) % 5];
+                        result += matrix[r1][(c1 + shift + 5) % 5] + matrix[r2][(c2 + shift + 5) % 5];
                     } else if (c1 === c2) {
-                        ciphertext += matrix[(r1 + 1) % 5][c1] + matrix[(r2 + 1) % 5][c2];
+                        result += matrix[(r1 + shift + 5) % 5][c1] + matrix[(r2 + shift + 5) % 5][c2];
                     } else {
-                        ciphertext += matrix[r1][c2] + matrix[r2][c1];
+                        result += matrix[r1][c2] + matrix[r2][c1];
                     }
                 }
 
-                return restoreSpaces(ciphertext, spaceIndexes);
-            }
-
-            function playfairDecrypt(ciphertext, key) {
-                const matrix = createPlayfairMatrix(key);
-                const lookup = createPlayfairLookup(matrix);
-                let spaceIndexes = [];
-
-                let plaintext = '';
-
-                for (let i = 0; i < ciphertext.length; i += 2) {
-                    let { row: r1, col: c1 } = lookup[ciphertext[i]];
-                    let { row: r2, col: c2 } = lookup[ciphertext[i + 1]];
-
-                    if (r1 === r2) {
-                        plaintext += matrix[r1][(c1 - 1 + 5) % 5] + matrix[r2][(c2 - 1 + 5) % 5];
-                    } else if (c1 === c2) {
-                        plaintext += matrix[(r1 - 1 + 5) % 5][c1] + matrix[(r2 - 1 + 5) % 5][c2];
-                    } else {
-                        plaintext += matrix[r1][c2] + matrix[r2][c1];
-                    }
-                }
-
-                return restoreSpaces(plaintext, spaceIndexes);
+                return restoreSpaces(result, spaceIndexes);
             }
 
             function encryptPlayfair() {
-                const message = document.getElementById('playfairMessage').value;
-                const key = document.getElementById('playfairKey').value;
-                const result = playfairEncrypt(message, key);
-                document.getElementById('playfairResult').textContent = result;
+                document.getElementById('playfairResult').textContent = playfairCipher(
+                    document.getElementById('playfairMessage').value,
+                    document.getElementById('playfairKey').value
+                );
             }
 
             function decryptPlayfair() {
-                const message = document.getElementById('playfairMessage').value;
-                const key = document.getElementById('playfairKey').value;
-                const result = playfairDecrypt(message, key);
-                document.getElementById('playfairResult').textContent = result;
+                document.getElementById('playfairResult').textContent = playfairCipher(
+                    document.getElementById('playfairMessage').value,
+                    document.getElementById('playfairKey').value,
+                    false
+                );
             }
+
+
 
         </script>
 
     </div>
+    
 
    
 </body>
