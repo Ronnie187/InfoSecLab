@@ -82,7 +82,7 @@
             processCaesar(true);
         }
 
-        function processCaesar(decrypt = none) {
+        function processCaesar(decrypt = false) {
             let text = document.getElementById('caesarMessage').value;
             let shift = parseInt(document.getElementById('caesarShift').value) || 0;
             document.getElementById('caesarResult').textContent = caesarCipher(text, shift, decrypt);
