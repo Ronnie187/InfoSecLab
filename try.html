@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLASSICAL CIPHERS</title>
+</head>
+<body>
+    
+    <h1>CLASSICAL CIPHERS</h1>
+
+    <div class="container-wrapper">
+
+    
+
+        
+        <div class="container">
+            <h3>CAESAR CIPHER</h3>
+            <input type="text" id="caesarMessage" placeholder="ENTER MESSAGE">
+            <input type="number" id="caesarShift" placeholder="ENTER SHIFT">
+            <div class="button-group">
+                <button onclick="processCaesar(false)">ENCRYPT</button>
+                <button onclick="processCaesar(true)">DECRYPT</button>
+            </div>
+            <p>RESULT: <span id="caesarResult"></span></p>
+
+        </div>
+
+        <script>
+
+            function caesarCipher(text, shift, decrypt=false){
+                shift = decrypt ? -shift : shift;
+                return text.replace(/[a-zA-Z]/g, char=>{
+                    let base = char >= 'a' ? 97 : 65;
+                    return String.fromCharCode((char.charCodeAt(0) - base + shift + 26) % 26 + base);
+                });
+            }
+
+            function processCaesar(decrypt=false){
+                let text = document.getElementById('caesarMessage').value;
+                let shift = parseInt(document.getElementById('caesarShift').value) || 0;
+                document.getElementById('caesarResult').textContent = caesarCipher(text, shift, decrypt);
+            }
+
+        </script>
+
+
+
+        <div class="container">
+
+            <h3>MONOALPHABETIC CIPHER</h3>
+            <h6>RANDOM KEY: <span id="randomKey"></span></h6>
+
+            <input type="text" id="monoMessage" placeholder="ENTER MESSAGE">
+            <div class="button-group">
+                <button onclick="processMono(true)">ENCRYPT</button>
+                <button onclick="processMono(false)">DECRYPT</button>
+            </div>
+            <p>RESULT: <span id="monoResult"></span></p>
+
+        </div>
+
+        <script>
+
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let shuffled = alphabet.split('').sort(()=> Math.random() - 0.5).join('');
+
+            document.getElementById('randomKey').textContent = shuffled;
+
+            function monoCipher(text, encrypt=true){
+                return text.replace(/[a-zA-Z]/g, char=>{
+                    let isUpper = char === char.toUpperCase();
+                    let source = isUpper ? alphabet : alphabet.toLowerCase();
+                    let target = isUpper ? shuffled : shuffled.toLowerCase();
+                    return encrypt ? target[source.indexOf(char)] : source[target.indexOf(char)];
+                });
+            }
+
+            function processMono(encrypt){
+                let text = document.getElementById('monoMessage').value;
+                document.getElementById('monoResult').textContent = monoCipher(text, encrypt);
+            }
+            console.log('UPPERCASE KEYS: ', shuffled);
+            console.log('lowercase keys: ', shuffled.toLowerCase());
+
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container">
+    <h2>Playfair Cipher</h2>
+    <input type="text" id="playfairMessage" placeholder="Enter message">
+    <input type="text" id="playfairKey" placeholder="Enter key">
+    <div class="button-group">
+        <button onclick="playfair(true)">Encrypt</button>
+        <button onclick="playfair(false)">Decrypt</button>
+    </div>
+    <p>Output: <span id="playfairResult"></span></p>
+</div>
+
+<script>
+    const createMatrix = (key) => 
+        Array.from({ length: 5 }, (_, i) =>
+            [...new Set((key + 'ABCDEFGHIKLMNOPQRSTUVWXYZ').toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, ''))]
+                .slice(i * 5, i * 5 + 5)
+        );
+
+    const prepareText = (text) => 
+        text.toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '')
+            .replace(/(.)\1/g, '$1X').padEnd(text.length + (text.length % 2), 'X');
+
+    const playfairCipher = (text, key, encrypt) => {
+        const matrix = createMatrix(key);
+        const lookup = matrix.flat().reduce((acc, char, i) => ({ ...acc, [char]: [Math.floor(i / 5), i % 5] }), {});
+        let result = '';
+
+        for (let i = 0; i < text.length; i += 2) {
+            const [r1, c1] = lookup[text[i]], [r2, c2] = lookup[text[i + 1]];
+            result += r1 === r2 
+                ? matrix[r1][(c1 + (encrypt ? 1 : 4)) % 5] + matrix[r2][(c2 + (encrypt ? 1 : 4)) % 5]
+                : c1 === c2 
+                    ? matrix[(r1 + (encrypt ? 1 : 4)) % 5][c1] + matrix[(r2 + (encrypt ? 1 : 4)) % 5][c2]
+                    : matrix[r1][c2] + matrix[r2][c1];
+        }
+        return result;
+    };
+
+    const playfair = (encrypt) => {
+        const message = prepareText(document.getElementById('playfairMessage').value);
+        const key = document.getElementById('playfairKey').value;
+        document.getElementById('playfairResult').textContent = playfairCipher(message, key, encrypt);
+    };
+</script>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</body>
+</html>
